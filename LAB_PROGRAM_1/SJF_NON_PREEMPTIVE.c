@@ -1,10 +1,12 @@
-#include<stdio.h>
-
-void main() {
-    int n,i,j,temp;
-    printf("Enter number of processers:");
+#include <stdio.h>
+int main()
+{
+    int n,i,time=0,smallest;
+    int at[20],bt[20],ct[20],tat[20],wt[20];
+    int completed[20]={0},count=0;
+    float avgwt=0,avgtat=0;
+    printf("Enter number of processes: ");
     scanf("%d",&n);
-    int at[n],bt[n],ct[n],tat[n],wt[n],rt[n];
     printf("Enter arrival time:");
     for(i=0;i<n;i++) {
         scanf("%d",&at[i]);
@@ -13,31 +15,35 @@ void main() {
     for(i=0;i<n;i++) {
         scanf("%d",&bt[i]);
     }
-// sort
-    for(i=0;i<n;i++) {
-        for(j=i+1;j<n;j++) {
-            if (at[i] > at[j]) {
-                temp = at[i];
-                at[i] = at[j];
-                at[j] = temp;
-                temp = bt[i];
-                bt[i] = bt[j];
-                bt[j] = temp;
+    while(count<n){
+        smallest=-1;
+        int min=9999;
+        for(i=0;i<n;i++){
+            if(at[i]<=time && completed[i]==0 && bt[i]<min){
+                min=bt[i];
+                smallest=i;
             }
         }
+        if(smallest==-1){
+            time++;
+        }
+        else{
+            time=time+bt[smallest];
+            ct[smallest]=time;
+            tat[smallest]=ct[smallest]-at[smallest];
+            wt[smallest]=tat[smallest]-bt[smallest];
+            avgwt+=wt[smallest];
+            avgtat+=tat[smallest];
+            completed[smallest]=1;
+            count++;
+        }
     }
-    ct[0] = bt[0];
-    for (i=1;i<n;i++) {
-        ct[i] = ct[i-1] + bt[i];
+    printf("\nP\tAT\tBT\tCT\tTAT\tWT\n");
+    for(i=0;i<n;i++){
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\n",
+        i+1,at[i],bt[i],ct[i],tat[i],wt[i]);
     }
-    for (i=0;i<n;i++) {
-        tat[i] = ct[i] - at[i];
-        wt[i] = tat[i] - bt[i]; 
-    }
-
-    printf("process\t at\t bt\t ct\t tat\t wt\t\n");
-    for(i=0;i<n;i++) {
-        printf("p%d\t %d\t %d\t %d\t %d\t %d\t\n",(i+1),at[i],bt[i],ct[i],tat[i],wt[i]);
-    }
-
+    printf("\nAverage Waiting Time = %.2f",avgwt/n);
+    printf("\nAverage Turnaround Time = %.2f\n",avgtat/n);
+    return 0;
 }
